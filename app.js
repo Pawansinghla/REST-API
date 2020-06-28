@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var session=require("express-session");
+var FileStore=require('session-file-store')(session);
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -40,13 +42,21 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser('1234s-67890-09876-54321'));//signed cokkie
+//app.use(cookieParser('1234s-67890-09876-54321'));//signed cokkie
 
+app.use(session({
+  name:'session-id',
+  secret:'12345-67890-098765-54321',
+  saveUninitialized:false,
+  resave:false,
+  store:new FileStore()
+
+}));
 
 
 function auth(req, res, next) {
-  console.log(req.signedCookies);
-  if (!req.signedCookies.user) {
+  console.log(req.session);
+  if (!req.session.user) {
     var authHeader = req.headers.authorization;
     if (!authHeader) {
       var err = new Error('You are not authenticated!');
@@ -61,7 +71,8 @@ function auth(req, res, next) {
     var username = auth[0];
     var password = auth[1];
     if (username === 'admin' && password === 'password') {
-      res.cookie('user', 'admin', { signed: true });
+      //res.cookie('user', 'admin', { signed: true });
+      req.session.user='admin'
       next();
     }
     else {
@@ -74,7 +85,8 @@ function auth(req, res, next) {
     }
   }
   else {
-    if (req.signedCookies.user === 'admin') {
+    if (req.session.user === 'admin') {
+      console.log('req.session: ',req.session);
       next();
     }
     else {
