@@ -3,7 +3,7 @@ const bodyparser=require('body-parser');
 const mongoose=require('mongoose');
 
 const Promotions=require('../models/promotions');
-
+const authenticate=require('../authenticate');
 
 const promoRouter=express.Router();
 promoRouter.use(bodyparser.json());
@@ -21,7 +21,7 @@ Promotions.find({})
     .catch((err) => next(err));
 })
 
-.post((req, res, next) => {//same
+.post(authenticate.verifyUser,(req, res, next) => {//same
   Promotions.create(req.body)
     .then((promotion) => {
       console.log('Promotion Created', promotion);
@@ -33,12 +33,12 @@ Promotions.find({})
     .catch((err) => next(err));
 })
 
-.put((req, res, next) => {
+.put(authenticate.verifyUser,(req, res, next) => {
   res.statusCode = 403;
   res.end('Put operation not supported on /promotions');
 
 })
-.delete((req, res, next) => {
+.delete(authenticate.verifyUser,(req, res, next) => {
   Promotions.remove({})
     .then((promotion) => {
       res.statusCode = 200;
@@ -65,11 +65,11 @@ Promotions.find({})
       .catch((err) => next(err));
   })
 
-  .post((req, res, next) => {
+  .post(authenticate.verifyUser,(req, res, next) => {
     res.statusCode = 403;
     res.end('post to /promotions/' + req.params.promoId + ' is forbidden');
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser,(req, res, next) => {
     Promotions.findByIdAndUpdate(req.param.promoId, {
       $set: req.body
     }, { new: true })
@@ -82,7 +82,7 @@ Promotions.find({})
       .catch((err) => next(err));
   })
 
-  .delete((req, res, next) => {
+  .delete(authenticate.verifyUser,(req, res, next) => {
     Promotions.findByIdAndRemove(req.params.promoId)
       .then((resp) => {
         res.statusCode = 200;
