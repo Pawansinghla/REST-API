@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const user = require('./user');
 const Schema = mongoose.Schema;
 
 require('mongoose-currency').loadType(mongoose);//load curreny typr in mongoose
@@ -18,8 +19,11 @@ const commentSchema = new Schema({
 
     },
     author: {
-        type: String,
-        required: true
+       
+       type:mongoose.Schema.Types.ObjectId,
+       ref:'User'
+       // type: String,
+     //   required: true
     }
 }, {
     timestamps: true

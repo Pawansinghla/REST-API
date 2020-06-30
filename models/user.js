@@ -6,6 +6,14 @@ var passportLocalMongoose=require('passport-local-mongoose');
 //username and password is automatic added in passport-local-mongoose plugin
 
 var User=new Schema({
+    firstname:{
+        type:String,
+        default:''
+    },
+    lastname:{
+        type:String,
+        default:''
+    },
     admin:{
         type:Boolean,//by default user will not be admin, you can set explicityle a particular user as a admin 
         default:false
