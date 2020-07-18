@@ -1,17 +1,28 @@
 var express = require('express');
 const bodyParser = require('body-parser');
-var User = require('../models/user');
 
 var passport = require('passport');
 var authenticate = require('../authenticate');
+const User = require('../models/user');
 
 
 var router = express.Router();
 router.use(bodyParser.json());
 
 
-router.get('/', function (req, res, next) {
-  res.send('respond with ');
+router.get('/', authenticate.verifyUser,authenticate.verifyAdmin,function (req, res, next) {
+  User.find({},(err,users)=>{
+    if(err){
+      var err=new Error('Only admin can access this');
+      err.status=403;
+      return next(err);
+    }
+    else{
+      res.statusCode=200;
+      res.setHeader('Content-Type','application/json');
+      res.json(users);
+    }
+  })
 });
 
 router.post('/signup', (req, res, next) => {
