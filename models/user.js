@@ -15,7 +15,7 @@ var User=new Schema({
         default:''
     },
     admin:{
-        type:Boolean,//by default user will not be admin, you can set explicityle a particular user as a admin 
+        type:Boolean,//by default user will not be admin, you can set explicitly  a particular user as a admin 
         default:false
     }
 });
