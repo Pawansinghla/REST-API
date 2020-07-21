@@ -4,13 +4,13 @@ const mongoose=require('mongoose');
 
 const Promotions=require('../models/promotions');
 const authenticate=require('../authenticate');
-
+const cors=require('./cors');
 const promoRouter=express.Router();
 promoRouter.use(bodyparser.json());
 
 promoRouter.route('/')
- 
-.get((req, res, next) => {//modify res,req come from above
+.options(cors.corsWithOptions,(req,res)=>{res.sendStatus(200);})
+.get(cors.cors,(req, res, next) => {//modify res,req come from above
 Promotions.find({})
     .then((promotions) => {
       res.statusCode = 200;
@@ -21,7 +21,7 @@ Promotions.find({})
     .catch((err) => next(err));
 })
 
-.post(authenticate.verifyUser,(req, res, next) => {//same
+.post(cors.corsWithOptions,authenticate.verifyUser,(req, res, next) => {//same
   Promotions.create(req.body)
     .then((promotion) => {
       console.log('Promotion Created', promotion);
@@ -33,12 +33,12 @@ Promotions.find({})
     .catch((err) => next(err));
 })
 
-.put(authenticate.verifyUser,(req, res, next) => {
+.put(cors.corsWithOptions,authenticate.verifyUser,(req, res, next) => {
   res.statusCode = 403;
   res.end('Put operation not supported on /promotions');
 
 })
-.delete(authenticate.verifyUser,(req, res, next) => {
+.delete(cors.corsWithOptions,authenticate.verifyUser,(req, res, next) => {
   Promotions.remove({})
     .then((promotion) => {
       res.statusCode = 200;
@@ -54,7 +54,8 @@ Promotions.find({})
 
 
   promoRouter.route('/:promoId')
-  .get((req, res, next) => {
+  .options(cors.corsWithOptions,(req,res)=>{res.sendStatus(200);})
+  .get(cors.cors,(req, res, next) => {
     Promotions.findById(req.params.promoId)
       .then((promotion) => {
         res.statusCode = 200;
@@ -65,11 +66,11 @@ Promotions.find({})
       .catch((err) => next(err));
   })
 
-  .post(authenticate.verifyUser,(req, res, next) => {
+  .post(cors.corsWithOptions,authenticate.verifyUser,(req, res, next) => {
     res.statusCode = 403;
     res.end('post to /promotions/' + req.params.promoId + ' is forbidden');
   })
-  .put(authenticate.verifyUser,(req, res, next) => {
+  .put(cors.corsWithOptions,authenticate.verifyUser,(req, res, next) => {
     Promotions.findByIdAndUpdate(req.param.promoId, {
       $set: req.body
     }, { new: true })
@@ -82,7 +83,7 @@ Promotions.find({})
       .catch((err) => next(err));
   })
 
-  .delete(authenticate.verifyUser,(req, res, next) => {
+  .delete(cors.corsWithOptions,authenticate.verifyUser,(req, res, next) => {
     Promotions.findByIdAndRemove(req.params.promoId)
       .then((resp) => {
         res.statusCode = 200;

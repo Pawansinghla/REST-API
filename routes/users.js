@@ -4,13 +4,15 @@ const bodyParser = require('body-parser');
 var passport = require('passport');
 var authenticate = require('../authenticate');
 const User = require('../models/user');
+const cors=require('./cors');
+
 
 
 var router = express.Router();
 router.use(bodyParser.json());
 
-
-router.get('/', authenticate.verifyUser,authenticate.verifyAdmin,function (req, res, next) {
+//apply on get also bcz get is perform by admin only 
+router.get('/',cors.corsWithOptions, authenticate.verifyUser,authenticate.verifyAdmin,function (req, res, next) {
   User.find({},(err,users)=>{
     if(err){
       var err=new Error('Only admin can access this');
@@ -25,7 +27,7 @@ router.get('/', authenticate.verifyUser,authenticate.verifyAdmin,function (req, 
   })
 });
 
-router.post('/signup', (req, res, next) => {
+router.post('/signup',cors.corsWithOptions, (req, res, next) => {
   User.register(new User({ username: req.body.username }),
     req.body.password, (err, user) => {
       //   .then((user) => {
@@ -64,7 +66,7 @@ router.post('/signup', (req, res, next) => {
 
 });
 
-router.post('/login', passport.authenticate('local'),
+router.post('/login',cors.corsWithOptions, passport.authenticate('local'),
   (req, res) => {
     var token = authenticate.getToken({ _id: req.user._id });
     res.statusCode = 200;
@@ -73,7 +75,7 @@ router.post('/login', passport.authenticate('local'),
 
   });
 
-router.get('/logout', (req, res) => {
+router.get('/logout',cors.corsWithOptions, (req, res) => {
   if (req.session) {
     req.session.destroy();//remove session at server side
     res.clearCookie('session-id');//asking to client to remove the cookie
