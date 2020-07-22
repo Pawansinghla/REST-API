@@ -14,10 +14,12 @@ var User=new Schema({
         type:String,
         default:''
     },
+    
+    facebookId:String,
     admin:{
         type:Boolean,//by default user will not be admin, you can set explicitly  a particular user as a admin 
         default:false
-    }
+    },
 });
 User.plugin(passportLocalMongoose);//add pass, username
 
