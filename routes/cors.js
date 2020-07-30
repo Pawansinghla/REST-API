@@ -3,7 +3,7 @@ const cors=require('cors');
 const app=express();
 
 
-const whitelits=['http://localhost:3000','https://localhost:3443']
+const whitelits=['http://localhost:3000','https://localhost:3443','http://DESKTOP-6JVQ2KC:3001']//for yarn start i added computername
 
 var corsOptionsDelegate=(req,callback)=>{
     var corsOptions;
